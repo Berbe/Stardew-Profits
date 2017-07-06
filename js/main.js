@@ -133,6 +133,7 @@ function profit(crop) {
     var harvests = crop.harvests;
     var fertilizer = fertilizers[options.fertilizer];
     var produce = options.produce;
+    var productionUnits = options.production;
 
     var ratioN = levels[options.level].ratioN;
     var ratioS = levels[options.level].ratioS;
@@ -909,7 +910,13 @@ function updateGraph() {
 function updateData() {
     var object, value;
 
-    options.season = parseInt(document.getElementById('select_season').value);
+    object = document.getElementById('select_season');
+    value = parseInt(object.value);
+    if (isNaN(value) || value <= 0) {
+        value = 1;
+        object.value = value;
+    }
+    options.season = value;
 
     if (options.season != 3) {
         document.getElementById('current_day_row').style.display = 'table-row';
@@ -961,8 +968,19 @@ function updateData() {
 
     object = document.getElementById('number_produce');
     value = parseInt(object.value);
-    if (isNaN(value) || value <= 0) {
-        value = 1;
+    if (isNaN(value) || value < 0) {
+        value = 0;
+        object.value = value;
+    }
+    if (options.produce > 0) {
+        object.disabled = false;
+        if(value <= 0) {
+            value = 1;
+            object.value = value;
+        }
+    } else {
+        object.disabled = true;
+        value = 0;
         object.value = value;
     }
     options.production = value;
