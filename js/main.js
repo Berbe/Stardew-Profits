@@ -92,6 +92,8 @@ function harvests(cropID) {
             }
         }
     }
+    // Storing remaining days computation for future use (cf. profit)
+    crop.remainingDays = remainingDays;
 
     // console.log("=== " + crop.name + " ===");
 
@@ -157,31 +159,30 @@ function profit(crop) {
         // console.log("Profit (After fertilizer): " + profit);
     }
 
-    if (produce == 0) {
-        profit += crop.produce.rawN * ratioN * harvests * options.planted;
-        profit += crop.produce.rawS * ratioS * harvests * options.planted;
-        profit += crop.produce.rawG * ratioG * harvests * options.planted;
-        // console.log("Profit (After normal produce): " + profit);
+    var itemsN = ratioN * harvests * options.planted;
+    var itemsS = ratioS * harvests * options.planted;
+    var itemsG = ratioG * harvests * options.planted;
+    // console.log('Yield (After normal produce): ' + itemsN + ' (N), ' + itemsS + ' (S), ' + itemsG + ' (G)');
 
-        if (crop.produce.extra > 0) {
-            profit += crop.produce.rawN * crop.produce.extraPerc * crop.produce.extra * harvests * options.planted;
-            // console.log("Profit (After extra produce): " + profit);
-        }
-
-        if (options.skills.till) {
-            profit += crop.produce.rawN * ratioN * harvests * options.planted * 0.1;
-            profit += crop.produce.rawS * ratioS * harvests * options.planted * 0.1;
-            profit += crop.produce.rawG * ratioG * harvests * options.planted * 0.1;
-
-            if (crop.produce.extra > 0)
-                profit += crop.produce.rawN * crop.produce.extraPerc * crop.produce.extra * harvests * options.planted * 0.1;
-
-            // console.log("Profit (After skills): " + profit);
-        }
+    if (crop.produce.extra > 0) {
+        itemsN += crop.produce.extraPerc * crop.produce.extra * harvests * options.planted;
+        // console.log('Yield (After extra produce): ' + items + ' (N)');
     }
-    else {
-        var items = harvests;
-        items += crop.produce.extraPerc * crop.produce.extra * harvests;
+
+    if (options.skills.till) {
+        itemsN += ratioN * harvests * options.planted * 0.1;
+        itemsS += ratioS * harvests * options.planted * 0.1;
+        itemsG += ratioG * harvests * options.planted * 0.1;
+
+        if (crop.produce.extra > 0) itemsN += crop.produce.extraPerc * crop.produce.extra * harvests * options.planted * 0.1;
+        // console.log('Yield (After skills): ' + itemsN + ' (N)');
+    }
+
+    if (produce == 0) {
+        profit += itemsN * crop.produce.rawN + itemsS * crop.produce.rawS + itemsG * crop.produce.rawG;
+    } else {
+        var items = itemsN + itemsS + itemsG;
+        if (productionUnits * harvests < items) items = productionUnits * harvests;
 
         switch (produce) {
             case 1: profit += items * crop.produce.jar * options.planted; break;
@@ -195,7 +196,6 @@ function profit(crop) {
             }
         }
     }
-
 
     // console.log("Profit: " + profit);
     return profit;
