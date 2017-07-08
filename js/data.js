@@ -1,7 +1,8 @@
 // Options used to draw the graph.
 var options = {
-	"produce" : 0,
 	"planted": 1,
+	"produce" : 0,
+	"production" : 0,
 	"days": 28,
 	"fertilizer": 2,
 	"level": 0,
