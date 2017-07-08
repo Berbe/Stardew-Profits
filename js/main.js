@@ -912,8 +912,8 @@ function updateData() {
 
     object = document.getElementById('select_season');
     value = parseInt(object.value);
-    if (isNaN(value) || value <= 0) {
-        value = 1;
+    if (isNaN(value) || value < 0) {
+        value = 0;
         object.value = value;
     }
     options.season = value;
